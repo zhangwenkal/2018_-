@@ -10,7 +10,6 @@ filename="test.xlsx"
 
 filepath=os.path.join(path,filename)
 
-
 xl=open_workbook(filepath)
 
 table=xl.sheet_by_index(0)
@@ -41,7 +40,7 @@ def change_time(args):
     for ar in args:
         result = re.split(symbol, ar)
         # 去除空字符
-        a1=[x for x in result if x]  #['14', '六月', '18', '9', '56', '下午']
+        a1=[x for x in result if x]  #['14', '六月', '18', '9', '56', '下午']  日期/月份/年
         a.append(a1)
 
     #将汉字月份适配成数字月份
@@ -55,13 +54,19 @@ def change_time(args):
                 break
 
     #适配成年月日格式月份
-        if int(aa[0])<12:
-            if j>9:
+        if aa[-1]=="上午":
+            if j>9:   #给分钟补上0
                 t='20'+aa[2]+'-'+str(j)+'-'+aa[0]+' '+aa[3]+':'+aa[4]+':'+'00'
             else:
                 t = '20' + aa[2] + '-' + '0'+str(j) + '-' + aa[0] + ' ' + aa[3] + ':' + aa[4] + ':' + '00'
-        elif int(aa[0])>=12:
-            if j>9:
+
+        elif aa[-1]=="下午" and int(aa[-3])==12:
+            if j>9:   #给分钟补上0
+                t='20'+aa[2]+'-'+str(j)+'-'+aa[0]+' '+aa[3]+':'+aa[4]+':'+'00'
+            else:
+                t = '20' + aa[2] + '-' + '0'+str(j) + '-' + aa[0] + ' ' + aa[3] + ':' + aa[4] + ':' + '00'
+        else:
+            if j>9:  #给分钟补上0
                 t = '20' + aa[2] + '-' + str(j) + '-' + aa[0] + ' ' +str(int(aa[3])+12) + ':' + aa[4] + ':' + '00'
             else:
                 t = '20' + aa[2] + '-' + '0'+str(j) + '-' + aa[0] + ' ' + str(int(aa[3]) + 12) + ':' + aa[4] + ':' + '00'
@@ -84,6 +89,7 @@ def delta(t1,t2):
         j+=1
         # 写入excel文件
         table_w.write(j,table.ncols-1,str(delta))
+    table_w.write(0, table.ncols - 1, "bug生命周期")
     #os.remove(filepath)
     excel_w.save(r"E:\D\\test1.xls")
 
